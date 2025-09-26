@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import sqlite3
 import os
+import pandas as pd
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -40,6 +42,16 @@ async def create_item(item: Item):
     item_id = cursor.lastrowid
     db.close()
     return {"id": item_id, "text": item.text}
+
+
+@app.get("/data")
+def get_data():
+    df = pd.DataFrame({
+        "nombre": ["Ana", "Luis", "Carlos"],
+        "edad": [23, 34, 45]
+    })
+    data = df.to_dict(orient="records")
+    return JSONResponse(content=data)
 
 if __name__ == "__main__":
     import uvicorn
